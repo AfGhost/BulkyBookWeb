@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container. Husk å gjøre dette før du bygger "Builder".
+// Add services to the container.           Husk å gjøre dette før du bygger "Builder".
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
         /*Bygge Tjenester som vil legge til DBContext i ApplicationDbContext hvor options*/
