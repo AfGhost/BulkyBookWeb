@@ -1,0 +1,35 @@
+﻿@model Category         /*Her trenger vi ikke IEnumerable model, siden vi skal Create og trenger ikke gå gjennom vår controller*/
+
+<form method="post">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Create Category</h2>
+            <hr />
+        </div>
+       @*<div asp-validation-summary="All"></div>@*       @*Denne skjuler vi siden validering per linje brukes litt lenger ned, så vi trenger ikke Validering for alt samme på toppen.*@
+        <div class="mb-3">
+            <label asp-for="Name"></label>                                      @*Denne gir raden en label "Name"*@
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>         @*Validering for å sjekke at feltet blir fylt siden feltet er NotNull og produserer da feilmelding hvis ikke.*@
+        </div>
+        <div class="mb-3">
+            <label asp-for="DisplayOrder"></label>                              @*Denne gir raden en label, som her er DisplayOrder.*@
+            <input asp-for="DisplayOrder" class="form-control" />
+            <span asp-validation-for="DisplayOrder" class="text-danger"></span> @*Denne gir denne raden en validering, som utgir feilmelding ved tom rad.*@
+        </div>
+        <div class="mb-3">
+            <label asp-for="CreatedDateTime"></label>
+            <input asp-for="CreatedDateTime" class="form-control" />    
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:150px">Create</button>
+        <a asp-controller="Category" asp-action="Index" class="btn btn-secondary" style="width:150px">
+            Back to List
+        </a> 
+    </div>
+</form>
+
+@section Scripts{          
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
