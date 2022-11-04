@@ -29,5 +29,85 @@ namespace BulkyBookWeb.Controllers
                                                             /*så kan vi kopiere det og lime det inni vår View(), slik: View(objCategoryList)*/
                                                             /*for at det skal vises på siden.*/
         }
+
+        //GET (Get action method)                           /*Når noen trykke på knappen "Create" skal de få mulighet til å skrive ting inn*/
+        public IActionResult Create()                       /*så når View blir lastet inn, så trenger den ikke å gjennom Model*/
+        {                                                   
+            return View();                                  /*Dermed kan du ha return View () blank og så kan du opprette en Model direkte inne i View*/
+                                            /*Ved å høyre klikke på "Create" -> "Add View" -> "Razor View, så Add*/
+                                            /*Da vil ny View med navnet "Create" opprettes i View mappen, under Category, som blir da "Create.cshtml"*/
+        }
+
+        //POST (POST action method)
+        [HttpPost]                          /*Hvis en POST action method er brukt, så må vi skrive HttpPost etter.*/
+        [ValidateAntiForgeryToken]          /*Er lurt å bruke på POST for å unngå forespørselsforfalskning på tvers av nettsider (the cross site request forgery)*/
+        public IActionResult Create(Category obj)
+        {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("name", "The DisplayOrder cannot exactly match the Name");
+            } 
+
+            if (ModelState.IsValid)                     /*Hvis den er Valid, vil Redirect til Index, hvis den er ikke Valid, */
+            {
+                _db.Categories.Add(obj);                /*for henting,trengte vi ikke å skrive noe annet, men for å legge til "Categories" inne i databasen forventer den en entity som vi har inne i "obj"*/
+                _db.SaveChanges();                      /*den blir ikke "pushed" til databasen før vi bruker "lagring" kommandoen, _db.SaveChanges*/
+                return RedirectToAction("Index");       /*med "return View();" når alle endringer er lagret, så har vi View her som vi ta oss tilbake til samme Category View.*/
+            }
+                                                        /*Men la oss si at når vi er ferdig, så skal vi gå tilbake til samme Index så vi kan se det nye Category som var opprette*/
+                                                        /*Så istedenfor "return View", skal vi omdirigere til en "action", og det vil vi til en Index action som er litt lenger oppe (Index Action Method)*/
+                                                        /*Den vil se etter Index inne i samme controller. Hvis du måtte gå til en annen Acton method i en annen controller, så kunne du skrive en controller navn etter Index etter komma*/
+                                                        /*Men siden vi er i samme controller, så trenger vi kun å Index her.*/
+            
+            return View(obj);                           /*Hvis den er IKKE Valid, vil den returnere tilbake til View med "obj"*/
+        }
+
+
+        //GET (Get action method)                           /*Når noen trykke på knappen "Edit" skal de få mulighet til å redigere ting inn*/
+        public IActionResult Edit(int? id)                         /*så når View blir lastet inn, så trenger den ikke å gjennom Model*/
+        {
+            if(id==null || id == 0)                                 /*Hvis ID er null eller ID er 0*/
+            {
+                return NotFound();                                          /*Så skal return bli "NotFound"*/
+            }                                                               /*Hvis det er ikke tilfelle og ID blir riktig lagt inn, så skal vi hente Category fra databasen "CategoryFromDb*/
+            var categoryFromDb = _db.Categories.Find(id);                   /*Variable categoryFromDb er lik vår _db.Categories og finne "id"*/
+            //var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+            //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
+
+            if (categoryFromDb == null)                             /*Hvis Category fra Db er NULL*/
+            {
+                return NotFound();                                  /*Så skal return bli "NotFound"*/
+            }
+
+            return View(categoryFromDb);                            /*Hvis vi finner den Category, så skal den returneres til View.*/
+                                                                    /*Så neste skal vi lage en View som vil ha Category Loaded og vi trenger å vise det som er funnet.*/
+                                                                    /*For det må vi lage en View som heter Edit. Den vil se helt lik ut som Create View*/
+                                                                    /*Eneste forskjellen vil bli at det vil være for Edit siden.*/
+
+        }
+
+        //POST (POST action method)
+        [HttpPost]                                          /*Hvis en POST action method er brukt, så må vi skrive HttpPost etter.*/
+        [ValidateAntiForgeryToken]                          /*Er lurt å bruke på POST for å unngå forespørselsforfalskning på tvers av nettsider (the cross site request forgery)*/
+        public IActionResult Edit(Category obj)             /*Action metode til Edit Category Obj*/
+        {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("name", "The DisplayOrder cannot exactly match the Name");
+            }
+
+            if (ModelState.IsValid)                         
+            {
+                _db.Categories.Update(obj);                 /*Siden dette er for Edit, så trenger vi ikke "Add", men "Update" for å endre i CategoryDb*/         
+                _db.SaveChanges();                          
+                return RedirectToAction("Index");           
+            }
+                                                            
+                                                            
+                                                            
+                                                            
+
+            return View(obj);                               
+        }
     }
 }
