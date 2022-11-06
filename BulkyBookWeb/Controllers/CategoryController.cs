@@ -1,6 +1,7 @@
 ﻿using BulkyBookWeb.Data;
 using BulkyBookWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -16,6 +17,9 @@ namespace BulkyBookWeb.Controllers
             _db = db;                                       /*Be om at _db er det samme som db.*/
                                                             /*Så kan vi bruke denne _db til å hente våre "Categories".*/
         }
+
+
+//INDEX!!!
 
         public IActionResult Index()    /*Index action metode.*/
         {                                                                           /*var objCategoryList = _db.Categories.ToList(); var forrige kode som ble endret til IEnumerable.*/
@@ -37,6 +41,9 @@ namespace BulkyBookWeb.Controllers
                                             /*Ved å høyre klikke på "Create" -> "Add View" -> "Razor View, så Add*/
                                             /*Da vil ny View med navnet "Create" opprettes i View mappen, under Category, som blir da "Create.cshtml"*/
         }
+
+
+//CREATE!!!
 
         //POST (POST action method)
         [HttpPost]                          /*Hvis en POST action method er brukt, så må vi skrive HttpPost etter.*/
@@ -63,6 +70,8 @@ namespace BulkyBookWeb.Controllers
         }
 
 
+//EDIT - GET!!!
+
         //GET (Get action method)                           /*Når noen trykke på knappen "Edit" skal de få mulighet til å redigere ting inn*/
         public IActionResult Edit(int? id)                         /*så når View blir lastet inn, så trenger den ikke å gjennom Model*/
         {
@@ -86,6 +95,9 @@ namespace BulkyBookWeb.Controllers
 
         }
 
+
+//EDIT - POST!!!
+
         //POST (POST action method)
         [HttpPost]                                          /*Hvis en POST action method er brukt, så må vi skrive HttpPost etter.*/
         [ValidateAntiForgeryToken]                          /*Er lurt å bruke på POST for å unngå forespørselsforfalskning på tvers av nettsider (the cross site request forgery)*/
@@ -102,12 +114,57 @@ namespace BulkyBookWeb.Controllers
                 _db.SaveChanges();                          
                 return RedirectToAction("Index");           
             }
-                                                            
-                                                            
-                                                            
-                                                            
 
             return View(obj);                               
         }
+
+
+//DELETE - GET!!!
+
+        //GET (Get action method)                           /*Når noen trykke på knappen "Edit" skal de få mulighet til å redigere ting inn*/
+        public IActionResult Delete(int? id)                         /*så når View blir lastet inn, så trenger den ikke å gjennom Model*/
+        {
+            if (id == null || id == 0)                                 /*Hvis ID er null eller ID er 0*/
+            {
+                return NotFound();                                          /*Så skal return bli "NotFound"*/
+            }                                                               /*Hvis det er ikke tilfelle og ID blir riktig lagt inn, så skal vi hente Category fra databasen "CategoryFromDb*/
+            var categoryFromDb = _db.Categories.Find(id);                   /*Variable categoryFromDb er lik vår _db.Categories og finne "id"*/
+            //var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+            //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
+
+            if (categoryFromDb == null)                             /*Hvis Category fra Db er NULL*/
+            {
+                return NotFound();                                  /*Så skal return bli "NotFound"*/
+            }
+
+            return View(categoryFromDb);                            /*Hvis vi finner den Category, så skal den returneres til View.*/
+            /*Så neste skal vi lage en View som vil ha Category Loaded og vi trenger å vise det som er funnet.*/
+            /*For det må vi lage en View som heter Edit. Den vil se helt lik ut som Create View*/
+            /*Eneste forskjellen vil bli at det vil være for Edit siden.*/
+
+        }
+
+        
+//DELETE - POST!!!
+
+        //POST (POST action method)
+        [HttpPost, ActionName("Delete")]                    /*Hvis en POST action method er brukt, så må vi skrive HttpPost etter.*/
+        [ValidateAntiForgeryToken]                          /*Er lurt å bruke på POST for å unngå forespørselsforfalskning på tvers av nettsider (the cross site request forgery)*/
+        public IActionResult DeletePOST(int? id)            /*/Vi kan ikke ha samme "Delete(int? id)" som i GET method, derfor endrer vi navnet her til "DeletePOST" istedet. Action metode til Delete Category Obj. Action method will pass the int id.*/
+        {
+            var obj = _db.Categories.Find(id);              /*Basert på id, vil vi hente Category, så som en vaiabel obj = _db.Categories.Find, basert på (id), vilvi finne "obj" og*/
+            if (obj == null)                                /*Hvis den er "null", så vil vi returnere: */
+            {
+                return NotFound();                          /*"NotFound",*/
+            }
+            
+                _db.Categories.Remove(obj);                 /*Ellers, på _db.Categories vil vi ha "Remove" som vil fjerne variabel "obj", istedenfor "Update" eller "Add" som vi brukte tidligere.*/    
+                _db.SaveChanges();                          /*Endringer vil lagres og*/
+                return RedirectToAction("Index");           /*Dirigere tilbake til "Index" siden.*/     
+                                                            /*Så kan vi lage en "Delete VIEW" for Delete akkurat sin vi gjorde for "Create" og "Edit"*/
+
+         
+        }
+
     }
 }
