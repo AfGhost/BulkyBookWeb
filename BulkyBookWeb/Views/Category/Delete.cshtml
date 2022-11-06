@@ -1,0 +1,34 @@
+﻿@model Category         /*Her trenger vi ikke IEnumerable model, siden vi skal Create og trenger ikke gå gjennom vår controller*/
+
+<form method="post" asp-action="Delete">                                   @*Denne må endres til "DeletePOST" da vi har endret POSt action method i CategoryController til "public IActionResult DeletePOST(int? id)"*@
+    <input asp-for="Id" hidden />                                               @*Denne vil være gjemt, men vil hente "Id" som vi refererer til i CategoryController "var obj = _db.Categories.Find(id);" og vil da ikke vise "id" som NULL*@
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Delete Category</h2>
+            <hr />
+        </div>
+        @*<div asp-validation-summary="All"></div>*@                            @*Alt av validering slettet vi, for det trenger vi ikke i Delete*@
+        <div class="mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" disabled class="form-control" />              @*Disabler denne*@
+        </div>
+        <div class="mb-3">
+            <label asp-for="DisplayOrder"></label>
+            <input asp-for="DisplayOrder" disabled class="form-control" />      @*Disabler denne*@
+        </div>
+        <div class="mb-3">
+            <label asp-for="CreatedDateTime"></label>
+            <input asp-for="CreatedDateTime" disabled class="form-control" />   @*Disabler denne*@
+        </div>
+        <button type="submit" class="btn btn-danger" style="width:150px">Delete</button>                   @*Knapp teksten vil forandres til Delete. Men den vil oppdatere blankt om vi ikke navngir Delete på toppen som <form method="post" asp-action="Delete">*@
+        <a asp-controller="Category" asp-action="Index" class="btn btn-secondary" style="width:150px">
+            Back to List
+        </a> 
+    </div>
+</form>
+
+@section Scripts{          
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
